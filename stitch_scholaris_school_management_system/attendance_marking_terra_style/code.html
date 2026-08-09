@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Scholaris - Mark Attendance</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400..700&amp;family=Nunito+Sans:opsz,wght@6..12,400..700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#8ecf9e",
+                        "on-background": "#2e3230",
+                        "on-tertiary-fixed-variant": "#554020",
+                        "on-surface-variant": "#4a4e4a",
+                        "tertiary-container": "#c4a66a",
+                        "error": "#b83230",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#4a4538",
+                        "surface-tint": "#4a7c59",
+                        "secondary-container": "#f0e8db",
+                        "surface": "#faf6f0",
+                        "inverse-on-surface": "#f5f0e8",
+                        "surface-container-highest": "#e4e0d8",
+                        "surface-variant": "#e4e0d8",
+                        "surface-container": "#f0ece4",
+                        "on-primary-fixed": "#002110",
+                        "on-primary-fixed-variant": "#2a6038",
+                        "primary-fixed-dim": "#8ecf9e",
+                        "secondary-fixed": "#f0e8db",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#4a7c59",
+                        "tertiary-fixed": "#f8e0a8",
+                        "on-primary-container": "#d8f0de",
+                        "secondary-fixed-dim": "#d4ccbf",
+                        "error-container": "#ffdad8",
+                        "tertiary": "#705c30",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#1e1a13",
+                        "surface-container-high": "#eae6de",
+                        "primary-container": "#78a886",
+                        "secondary": "#6b6358",
+                        "primary-fixed": "#c8e8d0",
+                        "background": "#faf6f0",
+                        "on-tertiary-fixed": "#221a05",
+                        "tertiary-fixed-dim": "#dcc48e",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3230",
+                        "surface-dim": "#dbd7cf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#5e5548",
+                        "outline": "#74796e",
+                        "on-tertiary-container": "#554020",
+                        "outline-variant": "#c4c8bc",
+                        "on-surface": "#2e3230",
+                        "surface-container-low": "#f5f1ea",
+                        "surface-bright": "#faf6f0",
+                        "on-error-container": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Literata", "serif"],
+                        "display": ["Literata", "serif"],
+                        "body": ["Nunito Sans", "sans-serif"],
+                        "label": ["Nunito Sans", "sans-serif"]
+                    },
+                    "boxShadow": {
+                        'soft': '0 4px 20px rgba(46, 50, 48, 0.06)'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for organic feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #faf6f0; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4ccbf; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c4c8bc; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased leading-relaxed min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 bg-primary dark:bg-primary flex flex-col border-r border-outline-variant z-20">
+<!-- Brand Header -->
+<div class="px-6 py-8 flex flex-col items-start gap-1">
+<h1 class="font-display text-2xl font-bold text-on-primary tracking-tight">SCHOLARIS</h1>
+<p class="text-on-primary-container text-sm opacity-80 font-label uppercase tracking-wider">Management System</p>
+</div>
+<!-- CTA -->
+<div class="px-4 mb-6">
+<button class="w-full bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed transition-colors py-3 px-4 rounded-lg flex items-center justify-center gap-2 font-bold font-label">
+<span class="material-symbols-outlined text-lg">add</span>
+                New Entry
+            </button>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto py-2 flex flex-col gap-1 px-3">
+<!-- Students -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label uppercase tracking-wider text-sm">Students</span>
+</a>
+<!-- Teachers -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label uppercase tracking-wider text-sm">Teachers</span>
+</a>
+<!-- Courses -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label uppercase tracking-wider text-sm">Courses</span>
+</a>
+<!-- Schedule -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label uppercase tracking-wider text-sm">Schedule</span>
+</a>
+<!-- Grades -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label uppercase tracking-wider text-sm">Grades</span>
+</a>
+<!-- Attendance (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary bg-primary-container border-l-4 border-primary-fixed-dim rounded-r-lg opacity-100 duration-200 shadow-sm" href="#">
+<span class="material-symbols-outlined fill">fact_check</span>
+<span class="font-label uppercase tracking-wider text-sm font-bold">Attendance</span>
+</a>
+</div>
+<!-- Footer Navigation -->
+<div class="p-3 border-t border-primary-container/30 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label uppercase tracking-wider text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container opacity-70 hover:bg-primary-container hover:opacity-100 transition-colors rounded-lg duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label uppercase tracking-wider text-sm">Support</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-20 w-[calc(100%-16rem)] bg-surface dark:bg-surface border-b border-outline-variant/30 flex justify-between items-center px-8 z-10 shadow-soft">
+<div class="flex items-center gap-6">
+<h2 class="font-display text-xl text-primary font-semibold">Dashboard</h2>
+<!-- Search (Search on left per JSON) -->
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-xl">search</span>
+<input class="bg-surface-container rounded-full py-2 pl-10 pr-4 text-sm font-body border-none focus:ring-2 focus:ring-primary/50 w-64 placeholder:text-on-surface-variant/60 text-on-surface" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<!-- Trailing Icons -->
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<!-- Profile -->
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-surface-container-high cursor-pointer hover:border-primary/50 transition-colors">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a friendly professional teacher with a warm smile, well-lit in a bright modern educational setting, earthy organic color tones, high quality photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlJ23cQk6_H35v6aDYnrNHX7lwimYQQlrSTDu7i8j62qB16jrWTNZjqpJCUQxc71ApUgW44yfBbrhNG2RhGjPCU1As0O9rZIP2mx0dD0la8BLv-OqxtlKHX9aB0prAmtnAs1Xdjs2K2nJGNJOVPnzwdNVhGWVVE45bFngS0ENNYkXmG8XZztj46eF_dzqn8rUqsIyaobA07VX9PSuhLVFRgZFNVMaoti_ZlfOdIffyQXa9AMOxbC72hw">
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 mt-20 p-8 w-full max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="font-headline text-3xl font-bold text-on-background mb-2">Mark Attendance</h2>
+<p class="text-on-surface-variant font-body">Record student presence for today's sessions.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<!-- Class Selection -->
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant font-semibold">Class / Course</label>
+<div class="relative">
+<select class="appearance-none bg-surface-container border border-outline-variant/50 text-on-background text-sm rounded-lg py-2.5 pl-4 pr-10 focus:ring-2 focus:ring-primary focus:border-primary font-body w-48 shadow-sm">
+<option>Biology 101 - Sec A</option>
+<option>Chemistry 202 - Sec B</option>
+<option>Physics 301 - Sec A</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Date Selection -->
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant font-semibold">Date</label>
+<div class="relative">
+<input class="bg-surface-container border border-outline-variant/50 text-on-background text-sm rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary focus:border-primary font-body w-44 shadow-sm" type="date" value="2023-10-24">
+</div>
+</div>
+</div>
+</div>
+<!-- Roster Card -->
+<div class="bg-surface-container-lowest rounded-[12px] shadow-soft border border-outline-variant/40 overflow-hidden mb-8">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 px-8 py-5 border-b border-outline-variant/30 bg-surface/50">
+<div class="col-span-6 md:col-span-7 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold">Student</div>
+<div class="col-span-6 md:col-span-5 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold text-center">Status</div>
+</div>
+<!-- Student List -->
+<div class="flex flex-col divide-y divide-outline-variant/20">
+<!-- Student Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 items-center hover:bg-surface-container/30 transition-colors group">
+<div class="col-span-6 md:col-span-7 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-secondary-container shrink-0">
+<img alt="Student" class="w-full h-full object-cover" data-alt="Portrait of a young female student with glasses looking attentively, soft natural lighting, organic earthy tones, high quality portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0CseaD7a-gk46LWpbwXm_fX6KFjFQqaB6nzUB_Ijnxgrq8m2yXrXUEay3CYx1ndLKpNYxh6FV0qd36CkcRk9uvctK6O9p_spl2L-TAC2CxUuARz5yjMVwhXrt3MdjsQi2S9QYZiZiEfvYs4BTZdGJh6ZafDP3HQ0idWB1vPQuoHNNTfR__eQzAtoH-5u8wK6USxMMl2GtT4QQ_Tcp2G1VLF8_1Dq9M7dVOsP1bLZcHvQobYVSLV3IBw">
+</div>
+<div>
+<p class="font-body font-bold text-on-background text-base group-hover:text-primary transition-colors">Eleanor Vance</p>
+<p class="font-body text-sm text-on-surface-variant">ID: STU-8492</p>
+</div>
+</div>
+<div class="col-span-6 md:col-span-5 flex justify-center">
+<!-- Segmented Control -->
+<div class="flex bg-surface-container rounded-lg p-1 gap-1 border border-outline-variant/30">
+<!-- Present (Active Sage) -->
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold bg-primary-container text-on-primary-container shadow-sm transition-all" data-status="P">P</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="A">A</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="L">L</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="E">E</button>
+</div>
+</div>
+</div>
+<!-- Student Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 items-center hover:bg-surface-container/30 transition-colors group">
+<div class="col-span-6 md:col-span-7 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-secondary-container shrink-0">
+<img alt="Student" class="w-full h-full object-cover" data-alt="Portrait of a young male student with curly hair, casual attire, warm lighting, organic earthy tones, high quality portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr6hHrVn81-YQCq8srPV54GBa7e8ybcuA9Su65KbpkztMD1Tuow68byvotLN4UM4dI7haJk6-pbhZdzLLYxyprm-EVdjNVlLoN8BXq-I-t6vioRS2iLUOZ6fqHCq0AyPACc4HQlhGpUMCo2r8KoWyYjIZq4TWwlBcx-fS-gduPw90mSD2_XgmBqey2u9OswJvxJ-S-lcFkRPBieUE3Dcsera0W6gRgXuv18Eqs5MQfNEZHCIlib5YFqg">
+</div>
+<div>
+<p class="font-body font-bold text-on-background text-base group-hover:text-primary transition-colors">Julian Crane</p>
+<p class="font-body text-sm text-on-surface-variant">ID: STU-8493</p>
+</div>
+</div>
+<div class="col-span-6 md:col-span-5 flex justify-center">
+<div class="flex bg-surface-container rounded-lg p-1 gap-1 border border-outline-variant/30">
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="P">P</button>
+<!-- Absent (Active Terracotta) -->
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold bg-error-container text-on-error-container shadow-sm transition-all" data-status="A">A</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="L">L</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="E">E</button>
+</div>
+</div>
+</div>
+<!-- Student Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 items-center hover:bg-surface-container/30 transition-colors group">
+<div class="col-span-6 md:col-span-7 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden flex items-center justify-center bg-tertiary-container shrink-0 text-on-tertiary-container font-headline font-bold">
+                            MS
+                        </div>
+<div>
+<p class="font-body font-bold text-on-background text-base group-hover:text-primary transition-colors">Maya Sterling</p>
+<p class="font-body text-sm text-on-surface-variant">ID: STU-8494</p>
+</div>
+</div>
+<div class="col-span-6 md:col-span-5 flex justify-center">
+<div class="flex bg-surface-container rounded-lg p-1 gap-1 border border-outline-variant/30">
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="P">P</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="A">A</button>
+<!-- Late (Active Ochre) -->
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold bg-tertiary-container text-on-tertiary-container shadow-sm transition-all" data-status="L">L</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="E">E</button>
+</div>
+</div>
+</div>
+<!-- Student Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 items-center hover:bg-surface-container/30 transition-colors group">
+<div class="col-span-6 md:col-span-7 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-secondary-container shrink-0">
+<img alt="Student" class="w-full h-full object-cover" data-alt="Portrait of a young student looking slightly downward, soft natural window light, organic earthy tones, high quality portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ6HCIi0qy2wnoel0ETgYqak8PuIEgAzX3rxeHUv3lFa0piW7TKwoGHgRnjKLvfdgl01v76G6qNYDpFGMEGsaBfAl_v9oUCIZkvNoyPLFRncy7D6PoedoXXa0e-cclw-iGwLrPA2INpVC5PrvBdxt6ZLVe8r_XZn1rSORSYbU7hGBo6NlWRqb0QL6QYMYiov8MR3rp1amYwP49-cXaiKXA0CgRHoCwGdTyVdXTskD2hFvKNk3pf6TC9w">
+</div>
+<div>
+<p class="font-body font-bold text-on-background text-base group-hover:text-primary transition-colors">Oliver Reed</p>
+<p class="font-body text-sm text-on-surface-variant">ID: STU-8495</p>
+</div>
+</div>
+<div class="col-span-6 md:col-span-5 flex justify-center">
+<div class="flex bg-surface-container rounded-lg p-1 gap-1 border border-outline-variant/30">
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold bg-primary-container text-on-primary-container shadow-sm transition-all" data-status="P">P</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="A">A</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="L">L</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="E">E</button>
+</div>
+</div>
+</div>
+<!-- Student Row 5 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-4 items-center hover:bg-surface-container/30 transition-colors group">
+<div class="col-span-6 md:col-span-7 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-secondary-container shrink-0 flex items-center justify-center text-on-secondary-container font-headline font-bold">
+                            SH
+                        </div>
+<div>
+<p class="font-body font-bold text-on-background text-base group-hover:text-primary transition-colors">Sophie Hayes</p>
+<p class="font-body text-sm text-on-surface-variant">ID: STU-8496</p>
+</div>
+</div>
+<div class="col-span-6 md:col-span-5 flex justify-center">
+<div class="flex bg-surface-container rounded-lg p-1 gap-1 border border-outline-variant/30">
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="P">P</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="A">A</button>
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all" data-status="L">L</button>
+<!-- Excused (Active Surface Variant/Neutral) -->
+<button class="status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold bg-surface-variant text-on-surface-variant shadow-sm transition-all" data-status="E">E</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-end gap-4">
+<button class="px-6 py-3 rounded-[12px] border border-outline-variant bg-surface text-primary font-bold font-label hover:bg-surface-container transition-colors">
+                Cancel
+            </button>
+<button class="px-8 py-3 rounded-[12px] bg-primary text-on-primary font-bold font-label hover:bg-primary-fixed-variant transition-colors shadow-soft flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span>
+                Submit all changes
+            </button>
+</div>
+</main>
+<script>
+        // Simple vanilla JS to handle segmented control interactions
+        document.querySelectorAll('.flex.bg-surface-container.rounded-lg').forEach(group => {
+            const buttons = group.querySelectorAll('.status-btn');
+            
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Reset all buttons in this group
+                    buttons.forEach(b => {
+                        b.className = 'status-btn px-4 py-1.5 rounded-md font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-all';
+                    });
+                    
+                    // Apply active styles based on status
+                    const status = btn.getAttribute('data-status');
+                    let activeClasses = 'status-btn px-4 py-1.5 rounded-md font-label text-sm font-bold shadow-sm transition-all ';
+                    
+                    if (status === 'P') activeClasses += 'bg-primary-container text-on-primary-container';
+                    else if (status === 'A') activeClasses += 'bg-error-container text-on-error-container';
+                    else if (status === 'L') activeClasses += 'bg-tertiary-container text-on-tertiary-container';
+                    else if (status === 'E') activeClasses += 'bg-surface-variant text-on-surface-variant';
+                    
+                    btn.className = activeClasses;
+                });
+            });
+        });
+    </script>
+</body></html>

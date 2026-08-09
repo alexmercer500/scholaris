@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Scholaris - Login</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#8ecf9e",
+                        "on-background": "#2e3230",
+                        "on-tertiary-fixed-variant": "#554020",
+                        "on-surface-variant": "#4a4e4a",
+                        "tertiary-container": "#c4a66a",
+                        "error": "#b83230",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#4a4538",
+                        "surface-tint": "#4a7c59",
+                        "secondary-container": "#f0e8db",
+                        "surface": "#faf6f0",
+                        "inverse-on-surface": "#f5f0e8",
+                        "surface-container-highest": "#e4e0d8",
+                        "surface-variant": "#e4e0d8",
+                        "surface-container": "#f0ece4",
+                        "on-primary-fixed": "#002110",
+                        "on-primary-fixed-variant": "#2a6038",
+                        "primary-fixed-dim": "#8ecf9e",
+                        "secondary-fixed": "#f0e8db",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#4a7c59",
+                        "tertiary-fixed": "#f8e0a8",
+                        "on-primary-container": "#d8f0de",
+                        "secondary-fixed-dim": "#d4ccbf",
+                        "error-container": "#ffdad8",
+                        "tertiary": "#705c30",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#1e1a13",
+                        "surface-container-high": "#eae6de",
+                        "primary-container": "#78a886",
+                        "secondary": "#6b6358",
+                        "primary-fixed": "#c8e8d0",
+                        "background": "#faf6f0",
+                        "on-tertiary-fixed": "#221a05",
+                        "tertiary-fixed-dim": "#dcc48e",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3230",
+                        "surface-dim": "#dbd7cf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#5e5548",
+                        "outline": "#74796e",
+                        "on-tertiary-container": "#554020",
+                        "outline-variant": "#c4c8bc",
+                        "on-surface": "#2e3230",
+                        "surface-container-low": "#f5f1ea",
+                        "surface-bright": "#faf6f0",
+                        "on-error-container": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Literata"],
+                        "display": ["Literata"],
+                        "body": ["Nunito Sans"],
+                        "label": ["Nunito Sans"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+<style>
+        /* Base typography settings for rooted warmth */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .shadow-soft {
+            box-shadow: 0 4px 20px rgba(46, 50, 48, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col md:flex-row">
+<!-- Left Panel: Branding / Imagery -->
+<div class="hidden md:flex flex-col justify-center items-center w-1/2 bg-primary relative overflow-hidden">
+<!-- Natural texture background placeholder to add organic depth -->
+<div class="absolute inset-0 opacity-30 bg-cover bg-center mix-blend-overlay" data-alt="A soft, abstract, organic texture resembling subtle layers of leaves or natural topography in monochromatic deep forest green. The lighting is warm and diffused, creating a grounded, calm atmosphere that perfectly complements a modern, earthy design aesthetic without overpowering the scene." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD14xwP52UOpZYDEaPlus6_vqWbalZI9m-1TmjVVXwRwsLj4K7MU-0dUW6n3ZdDjD0lgL1oIhLX8LK5iUhD4pN84mStjPuFCkK3M_o3CHmawU4Rq2dpZxUpR-D1HZeFE6ZEuARJyB0E8CV4Hm8YINpOL-I8pfQhLLSPIMePH--krBNJ6ADUi2susauC3akKpMl2R6gj6Q26LiZSrC4vHf4QYzusN-z-KfHqEBi6LZ6ZCEBITG8vByupiw')"></div>
+<div class="relative z-10 flex flex-col items-center text-center px-12">
+<div class="w-24 h-24 rounded-full bg-surface/10 flex items-center justify-center mb-8 backdrop-blur-sm border border-surface/20">
+<span class="material-symbols-outlined text-5xl text-on-primary" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<h1 class="font-headline text-5xl lg:text-6xl font-bold text-on-primary tracking-tight mb-4">SCHOLARIS</h1>
+<p class="text-primary-fixed-dim font-body text-xl font-light tracking-wide max-w-sm leading-relaxed">
+                Management System
+            </p>
+</div>
+<!-- Decorative subtle element -->
+<div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<!-- Right Panel: Login Form -->
+<div class="flex flex-col justify-center items-center w-full md:w-1/2 min-h-screen p-6 sm:p-12 relative">
+<!-- Mobile Header (Visible only on small screens) -->
+<div class="md:hidden flex flex-col items-center mb-10 w-full">
+<span class="material-symbols-outlined text-4xl text-primary mb-2">school</span>
+<h1 class="font-headline text-3xl font-bold text-primary tracking-tight">SCHOLARIS</h1>
+</div>
+<!-- Login Card -->
+<div class="w-full max-w-md bg-surface rounded-[12px] p-8 sm:p-10 shadow-soft border border-outline-variant/30 relative z-10">
+<div class="mb-10 text-center">
+<h2 class="font-headline text-3xl text-on-surface mb-3 font-medium">Welcome back</h2>
+<p class="text-on-surface-variant font-body text-base leading-relaxed">
+                    Please enter your details to sign in to your workspace.
+                </p>
+</div>
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Field -->
+<div>
+<label class="block text-sm font-semibold text-on-surface mb-2 font-label" for="email">Email address</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant text-xl">mail</span>
+</div>
+<input autocomplete="email" class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-[12px] bg-surface-container-lowest text-on-surface font-body placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all duration-200" id="email" name="email" placeholder="name@example.com" required="" type="email">
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<label class="block text-sm font-semibold text-on-surface mb-2 font-label" for="password">Password</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant text-xl">lock</span>
+</div>
+<input autocomplete="current-password" class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-[12px] bg-surface-container-lowest text-on-surface font-body placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all duration-200" id="password" name="password" placeholder="••••••••" required="" type="password">
+</div>
+</div>
+<!-- Utilities Row -->
+<div class="flex items-center justify-between mt-4">
+<div class="flex items-center">
+<input class="h-4 w-4 text-primary bg-surface-container-lowest border-outline-variant rounded focus:ring-primary focus:ring-2 transition-colors cursor-pointer" id="remember-me" name="remember-me" type="checkbox">
+<label class="ml-2 block text-sm text-on-surface-variant font-body cursor-pointer" for="remember-me">
+                            Remember me
+                        </label>
+</div>
+<div class="text-sm">
+<a class="font-label font-semibold text-primary hover:text-on-primary-fixed-variant transition-colors duration-200" href="#">
+                            Forgot password?
+                        </a>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-2">
+<button class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-[12px] shadow-sm text-base font-semibold text-on-primary bg-primary hover:bg-on-primary-fixed-variant focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-surface transition-all duration-200 font-label" type="submit">
+                        Sign in
+                    </button>
+</div>
+</form>
+</div>
+<!-- Footer Links -->
+<div class="mt-8 text-center text-sm text-on-surface-variant font-body">
+            Need help accessing your account? 
+            <a class="font-semibold text-tertiary hover:text-on-tertiary-fixed-variant transition-colors" href="#">Contact Administrator</a>
+</div>
+</div>
+</body></html>

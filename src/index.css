@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4a7c59;
+  --color-primary-fixed-dim: #8ecf9e;
+  --color-primary-container: #78a886;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #002110;
+
+  --color-background: #faf6f0;
+  --color-surface: #faf6f0;
+  --color-surface-bright: #faf6f0;
+  --color-surface-dim: #dbd7cf;
+  --color-surface-container: #f0ece4;
+  --color-surface-container-low: #f5f1ea;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #eae6de;
+  --color-surface-container-highest: #e4e0d8;
+  --color-on-surface: #2e3230;
+  --color-on-surface-variant: #4a4e4a;
+
+  --color-tertiary: #705c30;
+  --color-tertiary-container: #c4a66a;
+  --color-on-tertiary: #ffffff;
+
+  --color-secondary: #6b6358;
+  --color-secondary-container: #f0e8db;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #5e5548;
+
+  --color-outline: #74796e;
+  --color-outline-variant: #c4c8bc;
+
+  --color-error: #b83230;
+  --color-error-container: #ffdad8;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #690005;
+
+  --color-inverse-primary: #8ecf9e;
+  --color-inverse-surface: #2e3230;
+  --color-inverse-on-surface: #f5f0e8;
+
+  --color-primary-fixed: #c8e8d0;
+  --color-on-primary-fixed: #002110;
+  --color-tertiary-fixed: #f8e0a8;
+  --color-on-tertiary-fixed: #221a05;
+  --color-secondary-fixed: #f0e8db;
+  --color-on-secondary-fixed: #1e1a13;
+
+  /* Fonts */
+  --font-headline: "Literata", Georgia, serif;
+  --font-body: "Nunito Sans", system-ui, sans-serif;
+  --font-label: "Nunito Sans", system-ui, sans-serif;
+
+  /* Radii */
+  --radius-xl: 1rem;
+
+  /* Shadows */
+  --shadow-soft: 0 4px 20px rgba(46, 50, 48, 0.06);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-headline);
+  color: var(--color-on-surface);
+}
+
+button {
+  @apply cursor-pointer;
+}
