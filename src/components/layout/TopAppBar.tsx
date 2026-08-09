@@ -5,7 +5,7 @@ export function TopAppBar() {
   const logout = useLogout()
 
   return (
-    <header className="flex justify-between items-center h-16 px-8 w-full bg-surface sticky top-0 z-10 border-b border-outline-variant/20">
+    <header className="flex justify-between items-center h-16 px-8 py-2.5 w-full bg-surface sticky top-0 z-10 border-b border-outline-variant/20">
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <div className="relative focus-within:ring-2 focus-within:ring-primary rounded-full">

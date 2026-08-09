@@ -34,15 +34,15 @@ export function StudentsPage() {
     }
 
     return (
-        <main>
+        <>
             <PageHeader
                 title="Students Directory"
                 subtitle="Manage, filter, and review student records and academic standing."
             />
 
             {/* Bento table card */}
-            <div className="bg-surface-container-lowest rounded-xl shadow-soft border border-outline-variant/30 overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="bg-surface-container-lowest rounded-xl shadow-soft border border-outline-variant/30 overflow-hidden grow">
+                <div className="overflow-x-auto h-full">
                     <table className="w-full text-left border-collapse min-w-225">
                         <thead>
                             <tr className="bg-surface-container text-on-surface-variant border-b border-outline-variant/50 text-sm tracking-wide uppercase font-label">
@@ -69,14 +69,14 @@ export function StudentsPage() {
                                             className="w-4 h-4 accent-primary cursor-pointer"
                                         />
                                     </td>
-                                    <td className="py-3 px-3 font-mono text-sm text-secondary">
+                                    <td className="p-2.5 font-mono text-sm text-secondary">
                                         {student.rollNumber}
                                     </td>
-                                    <td className="py-3 px-3">
+                                    <td className="p-2.5">
                                         <div className="flex items-center gap-3">
                                             <div
                                                 className={cn(
-                                                    'w-10 h-10 rounded-full flex items-center justify-center font-bold font-headline text-lg shrink-0',
+                                                    'size-8 rounded-full flex items-center justify-center font-bold font-headline text-sm shrink-0',
                                                     isAtRisk(student)
                                                         ? 'bg-error-container text-error'
                                                         : 'bg-primary-container text-primary-fixed-variant',
@@ -91,10 +91,10 @@ export function StudentsPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="py-3 px-3 text-on-surface-variant">
+                                    <td className="p-2.5 text-on-surface-variant">
                                         {student.className} · {student.section}
                                     </td>
-                                    <td className="py-3 px-3">
+                                    <td className="p-2.5">
                                         <p className="font-medium text-on-surface">
                                             {student.guardian}
                                         </p>
@@ -102,7 +102,7 @@ export function StudentsPage() {
                                             {student.contact}
                                         </p>
                                     </td>
-                                    <td className="py-3 px-3 text-center">
+                                    <td className="p-2.5 text-center">
                                         <span
                                             className={cn(
                                                 'font-medium',
@@ -136,6 +136,6 @@ export function StudentsPage() {
                     </table>
                 </div>
             </div>
-        </main>
+        </>
     )
 }
