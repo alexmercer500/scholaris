@@ -2,17 +2,8 @@ import type { ColumnDef, RowData } from "@tanstack/react-table";
 import type { Student } from "@models/models";
 import { cn } from "@lib/cn";
 
-/**
- * Adds per-column class names to TanStack's `meta` slot.
- *
- * One loop now renders every header and cell, so the widths and edge padding
- * that used to sit on individual `<th>`/`<td>` elements have to travel with
- * the column definition instead.
- */
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
-    /** Both params are required to match the library's signature so the
-     *  declaration merges; this line keeps `noUnusedParameters` satisfied. */
     __variance?: [TData, TValue];
     thClassName?: string;
     tdClassName?: string;
@@ -38,20 +29,20 @@ function isAtRisk(student: StudentRow): boolean {
 }
 
 export const studentColumns: ColumnDef<StudentRow>[] = [
-  {
-    id: 'select',
-    header: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
-    cell: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
-    enableSorting: false,
-    meta: { thClassName: 'py-4 pl-6 pr-3 w-12', tdClassName: 'py-3 pl-6 pr-3' },
-  },
+  // {
+  //   id: 'select',
+  //   header: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
+  //   cell: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
+  //   enableSorting: false,
+  //   meta: { thClassName: 'py-4 pl-6 pr-3 w-12', tdClassName: 'py-3 pl-6 pr-3' },
+  // },
   {
     accessorKey: 'rollNumber',
     header: 'Roll No',
     cell: ({ row }) => (
       <span className="font-mono text-sm text-secondary">{row.original.rollNumber}</span>
     ),
-    meta: { thClassName: 'py-4 px-3 font-semibold w-24', tdClassName: 'p-2.5' },
+    meta: { thClassName: 'py-4 pl-6 pr-3 font-semibold w-24', tdClassName: 'py-4 pl-6 pr-3' },
   },
   {
     accessorKey: 'name',
