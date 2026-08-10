@@ -9,14 +9,10 @@ export function useLogout() {
     const navigate = useNavigate()
 
     const logout = useCallback(() => {
-        try {
-            dispatch(loggedOut());
-            navigate('/')
-            toast.success('Successfully Logged out')
-        } catch (error) {
-            console.log(error);
-            toast.error('Something went wrong')
-        }
+        dispatch(loggedOut());
+        navigate('/login', { replace: true })
+        toast.success('Successfully Logged out')
+
     }, [dispatch, navigate])
 
     return logout

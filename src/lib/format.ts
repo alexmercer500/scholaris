@@ -1,9 +1,16 @@
-import { format, parseISO } from 'date-fns'
 
-/** Format a date string/Date into a human-readable label (e.g. "12 Sep 2024"). */
 export function formatDate(value: string | Date): string {
-  const date = typeof value === 'string' ? parseISO(value) : value
-  return format(date, 'd MMM yyyy')
+  const date = typeof value === 'string' ? new Date(value) : value
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).formatToParts(date)
+
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? ''
+
+  return `${get('day')} ${get('month').slice(0, 3)} ${get('year')}`
 }
 
 /** Format a number as a percentage without excessive decimals. */
