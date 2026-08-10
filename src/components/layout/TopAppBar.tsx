@@ -1,4 +1,4 @@
-import { Bell, Settings, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useLogout } from '@features/hooks/useLogout'
 import type { ReactNode } from 'react'
 

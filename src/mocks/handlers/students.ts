@@ -1,6 +1,7 @@
 import { demoStudents, updateStudent } from "@mocks/db/students";
 import { http, HttpResponse } from "msw";
 import { demoClasses } from "@mocks/db/classes";
+import type { Student } from "@models/models";
 
 const classNames = Object.fromEntries(
     demoClasses.map((c) => [c.id, c.name])
@@ -20,7 +21,7 @@ export const studentsHandlers = [
         return HttpResponse.json(student)
     }),
     http.put('/api/students/:id', async ({ params, request }) => {
-        const body = await request.json()
+        const body = await request.json() as Partial<Student>
         const updated = updateStudent(params.id as string, body)
         if (!updated) return HttpResponse.json({ message: 'Not found' }, { status: 404 })
         return HttpResponse.json(updated)

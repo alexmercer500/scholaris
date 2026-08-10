@@ -3,12 +3,9 @@ import {
   LayoutDashboard,
   GraduationCap,
   School,
-  Users,
   CalendarDays,
-  FileText,
   Settings,
-  HelpCircle,
-  UserPlus,
+  // UserPlus,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@lib/cn'
@@ -52,10 +49,10 @@ export function SideNav() {
       </div>
 
       {/* New Registration */}
-      <button className="w-full bg-primary text-on-primary py-3 rounded-[12px] font-semibold mb-6 hover:bg-primary-fixed-dim transition-colors active:scale-[0.98] duration-200 flex items-center justify-center gap-2">
+      {/* <button className="w-full bg-primary text-on-primary py-3 rounded-[12px] font-semibold mb-6 hover:bg-primary-fixed-dim transition-colors active:scale-[0.98] duration-200 flex items-center justify-center gap-2">
         <UserPlus className="w-5 h-5" />
         New Registration
-      </button>
+      </button> */}
 
       {/* Main nav */}
       <ul className="flex-1 space-y-2">
@@ -104,3 +101,4 @@ export function SideNav() {
     </nav>
   )
 }
+
