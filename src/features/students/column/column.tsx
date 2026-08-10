@@ -1,4 +1,5 @@
 import type { ColumnDef, RowData } from "@tanstack/react-table";
+import { Link } from 'react-router'
 import type { Student } from "@models/models";
 import { cn } from "@lib/cn";
 
@@ -62,9 +63,12 @@ export const studentColumns: ColumnDef<StudentRow>[] = [
             {getInitials(student.name)}
           </div>
           <div>
-            <p className="font-bold text-on-surface group-hover:text-primary transition-colors cursor-pointer">
+            <Link
+              to={`/students/${student.id}`}
+              className="font-bold text-on-surface group-hover:text-primary transition-colors hover:text-primary cursor-pointer"
+            >
               {student.name}
-            </p>
+            </Link>
           </div>
         </div>
       )
@@ -140,3 +144,4 @@ export const studentColumns: ColumnDef<StudentRow>[] = [
     },
   },
 ]
+

@@ -1,5 +1,4 @@
 import { useGetStudentsQuery } from "../api/studentApi";
-import { TopHeader } from "@components/ui/TopHeader";
 import { studentColumns } from "../column/column";
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
@@ -14,13 +13,13 @@ import { useSearchParams } from "react-router";
 import { Pagination } from "@components/ui/Pagination";
 import { useDebouncedValue } from '@hooks/useDebouncedValue';
 import { TopAppBar } from "@components/layout/TopAppBar";
+import { SkeletonTable } from "@components/ui/SkeletonTable";
 
 export function StudentsPage() {
   const { data = [], isLoading, error } = useGetStudentsQuery(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') ?? '1') - 1;
 
-  // Search (debounced) + filtering BEFORE the table.
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
 
@@ -37,7 +36,7 @@ export function StudentsPage() {
   const onPageChange = (newPageIndex: number) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev)
-      params.set('page', String(newPageIndex + 1))  // store 1-based
+      params.set('page', String(newPageIndex + 1))
       return params
     })
   }
@@ -57,9 +56,7 @@ export function StudentsPage() {
   });
   if (isLoading) {
     return (
-      <div className="p-8 font-body text-on-surface-variant">
-        Loading students...
-      </div>
+      <SkeletonTable />
     );
   }
   if (error) {
@@ -84,7 +81,7 @@ export function StudentsPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value)
-            onPageChange(0) // reset to page 1 when searching
+            onPageChange(0)
           }}
           placeholder="Search by name, roll, or guardian..."
           className="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-on-surface placeholder:text-outline font-body focus:outline-none"
@@ -116,36 +113,56 @@ export function StudentsPage() {
               ))}
             </thead>
             <tbody className="text-on-background font-body text-base divide-y divide-outline-variant/20">
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="hover:bg-surface-container/30 transition-colors group"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={cell.column.columnDef.meta?.tdClassName}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={table.getVisibleLeafColumns().length}
+                    className="py-16 text-center"
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <Search className="w-8 h-8 text-outline" />
+                      <p className="font-semibold text-on-surface">
+                        No students found
+                      </p>
+                      <p className="text-sm text-on-surface-variant">
+                        Try adjusting your search.
+                      </p>
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="hover:bg-surface-container/30 transition-colors group"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className={cell.column.columnDef.meta?.tdClassName}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
-          <Pagination
-            pageIndex={page}
-            pageSize={10}
-            totalItems={filteredData.length}
-            onPageChange={onPageChange}
-            className="sticky bottom-0 mt-auto"
-          />
+          {filteredData.length > 0 && (
+            <Pagination
+              pageIndex={page}
+              pageSize={10}
+              totalItems={filteredData.length}
+              onPageChange={onPageChange}
+              className="sticky bottom-0 mt-auto"
+            />
+          )}
         </div>
       </div>
     </>
   );
 }
-

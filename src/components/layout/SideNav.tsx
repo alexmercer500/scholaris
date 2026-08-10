@@ -23,14 +23,14 @@ const mainNav: NavItem[] = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Students', to: '/students', icon: GraduationCap },
   { label: 'Faculty', to: '/faculty', icon: School },
-  { label: 'Classes', to: '/classes', icon: Users },
+  // { label: 'Classes', to: '/classes', icon: Users },
   { label: 'Attendance', to: '/attendance', icon: CalendarDays },
-  { label: 'Reports', to: '/reports', icon: FileText },
+  // { label: 'Reports', to: '/reports', icon: FileText },
 ]
 
 const secondaryNav: NavItem[] = [
   { label: 'Settings', to: '/settings', icon: Settings },
-  { label: 'Support', to: '/support', icon: HelpCircle },
+  // { label: 'Support', to: '/support', icon: HelpCircle },
 ]
 
 export function SideNav() {
@@ -69,7 +69,7 @@ export function SideNav() {
                   'transition-colors active:scale-[0.98] duration-200 font-label text-[15px] leading-relaxed',
                   'hover:bg-surface-container-high',
                   isActive &&
-                    'bg-surface-container-high text-primary font-bold border-r-4 border-primary',
+                  'bg-surface-container-high text-primary font-bold border-r-4 border-primary',
                 )
               }
             >
@@ -92,7 +92,7 @@ export function SideNav() {
                 'transition-colors active:scale-[0.98] duration-200 font-label text-[15px]',
                 'hover:bg-surface-container-high',
                 isActive &&
-                  'bg-surface-container-high text-primary font-bold border-r-4 border-primary',
+                'bg-surface-container-high text-primary font-bold border-r-4 border-primary',
               )
             }
           >

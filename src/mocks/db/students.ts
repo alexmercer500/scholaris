@@ -1,3 +1,4 @@
+import type { Student } from '@models/models'
 import { demoClasses } from './classes'
 
 export const demoStudents = Array.from({ length: 100 }, (_, i) => {
@@ -16,3 +17,10 @@ export const demoStudents = Array.from({ length: 100 }, (_, i) => {
     attendancePercentage: 70 + (i % 30),
   }
 })
+
+export function updateStudent(id: string, updates: Partial<Student>): Student | undefined {
+  const idx = demoStudents.findIndex((s) => s.id === id)
+  if (idx === -1) return undefined
+  demoStudents[idx] = { ...demoStudents[idx], ...updates }
+  return demoStudents[idx]
+}

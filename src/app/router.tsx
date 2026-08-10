@@ -6,6 +6,7 @@ import { NotFound } from '@features/pages/NotFound'
 import GuestOnly from '@features/auth/components/GuestOnly'
 import { DashboardLayout } from '@components/layout/DashboardLayout'
 import { StudentsPage } from '@features/students/pages/StudentPage'
+import { StudentDetailPage } from '@features/students/pages/StudentDetailPage'
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: '/', element: <DashBoard /> },
-      { path: '/students', element: <StudentsPage /> }
+      { path: '/students', element: <StudentsPage /> },
+      { path: '/students/:id', element: <StudentDetailPage /> }
     ],
   },
   { path: '*', element: <NotFound /> },
@@ -33,3 +35,4 @@ const router = createBrowserRouter([
 export function AppRouter() {
   return <RouterProvider router={router} />
 }
+
