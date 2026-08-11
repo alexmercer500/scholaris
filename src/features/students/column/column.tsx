@@ -24,7 +24,6 @@ function getInitials(name: string): string {
     .toUpperCase()
 }
 
-/** Attendance is "at risk" when below 75%. */
 function isAtRisk(student: StudentRow): boolean {
   return student.attendancePercentage < 75
 }

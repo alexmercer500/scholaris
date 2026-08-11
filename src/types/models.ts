@@ -1,5 +1,3 @@
-/** Core domain models. */
-
 export type Role = 'ADMIN' | 'TEACHER' | 'STUDENT'
 
 export interface User {
