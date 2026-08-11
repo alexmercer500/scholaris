@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router'
 import { Pencil, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
@@ -39,13 +39,17 @@ export function StudentDetailPage() {
   const { data: student, isLoading, error } = useGetStudentQuery(id)
   const [updateStudent, { isLoading: saving }] = useUpdateStudentMutation()
 
-  const [form, setForm] = useState<Partial<Student>>({})
-  useEffect(() => {
-    if (student) setForm(student)
-  }, [student])
+  /**
+   * Only the fields the user has actually touched live in state; the form
+   * value is derived from the server data on every render. This keeps the
+   * fetched student as the single source of truth — no effect needed to sync
+   * the two, and a refetch can't silently clobber an in-progress edit.
+   */
+  const [edits, setEdits] = useState<Partial<Student>>({})
+  const form: Partial<Student> = { ...student, ...edits }
 
   const set = (key: keyof Student) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm((prev) => ({ ...prev, [key]: e.target.value }))
+    setEdits((prev) => ({ ...prev, [key]: e.target.value }))
 
   if (isLoading) {
     return (
@@ -75,8 +79,9 @@ export function StudentDetailPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await updateStudent({ id: student.id, updates: form }).unwrap()
+      await updateStudent({ id: student.id, updates: edits }).unwrap()
       toast.success('Student updated')
+      setEdits({})
       setEditing(false)
     } catch (err) {
       console.log(err);
@@ -175,7 +180,14 @@ export function StudentDetailPage() {
               <Button type="submit" disabled={saving}>
                 <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
               </Button>
-              <Button variant="secondary" onClick={() => setEditing(false)} disabled={saving}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setEdits({})
+                  setEditing(false)
+                }}
+                disabled={saving}
+              >
                 <X className="w-4 h-4" /> Cancel
               </Button>
             </div>
