@@ -2,6 +2,7 @@ import type { ColumnDef, RowData } from "@tanstack/react-table";
 import { Link } from 'react-router'
 import type { Student } from "@models/models";
 import { cn } from "@lib/cn";
+import { getInitials, isAtRisk } from "@lib/helper";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -13,29 +14,7 @@ declare module "@tanstack/react-table" {
 
 export type StudentRow = Student & { className: string };
 
-/** "Student 1" -> "S1", "Priya Nair" -> "PN" */
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((word) => word[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
-
-function isAtRisk(student: StudentRow): boolean {
-  return student.attendancePercentage < 75
-}
-
 export const studentColumns: ColumnDef<StudentRow>[] = [
-  // {
-  //   id: 'select',
-  //   header: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
-  //   cell: () => <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />,
-  //   enableSorting: false,
-  //   meta: { thClassName: 'py-4 pl-6 pr-3 w-12', tdClassName: 'py-3 pl-6 pr-3' },
-  // },
   {
     accessorKey: 'rollNumber',
     header: 'Roll No',

@@ -6,6 +6,7 @@ import { TopAppBar } from "@components/layout/TopAppBar";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import { Skeleton } from "@components/ui/Skeleton";
+import { getInitials } from '@lib/helper';
 import {
   useGetStudentQuery,
   useUpdateStudentMutation,
@@ -13,21 +14,10 @@ import {
 import type { Student } from "@models/models";
 import { demoClasses } from "@mocks/db/classes";
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
-
 function classNameFor(classId: string): string {
   return demoClasses.find((c) => c.id === classId)?.name ?? classId
 }
 
-/** A labelled value row used in the read-only detail grid. */
 function Field({ label, value }: { label: string; value?: string }) {
   return (
     <div>
@@ -49,7 +39,6 @@ export function StudentDetailPage() {
   const { data: student, isLoading, error } = useGetStudentQuery(id)
   const [updateStudent, { isLoading: saving }] = useUpdateStudentMutation()
 
-  // Controlled form state (resets when we load or enter edit mode)
   const [form, setForm] = useState<Partial<Student>>({})
   useEffect(() => {
     if (student) setForm(student)
@@ -90,8 +79,8 @@ export function StudentDetailPage() {
       toast.success('Student updated')
       setEditing(false)
     } catch (err) {
-      const message = (err as { data?: { message?: string } })?.data?.message
-      toast.error(message ?? 'Failed to update student')
+      console.log(err);
+      toast.error( 'Failed to update student')
     }
   }
 

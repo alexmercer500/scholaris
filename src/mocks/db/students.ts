@@ -91,7 +91,6 @@ export const demoStudents = loadSeed()
 
 export function resetStudents(): void {
   localStorage.removeItem(STORAGE_KEY)
-  // Rebuild the in-memory array in place (preserves the exported reference).
   const fresh = buildSeed()
   demoStudents.splice(0, demoStudents.length, ...fresh)
 }
