@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { Column } from '@components/ui/DataGrid'
 import type { AttendanceStatus } from '../types'
 import { StatusCell } from '../components/StatusCell'
+import { nextStatus } from '../statusMeta'
 
 export interface RegisterRow {
   id: string
@@ -11,10 +12,9 @@ export interface RegisterRow {
 }
 
 export function useRegisterColumns(
-  students: RegisterRow[],
   month: string,
   holidays: Set<string>,
-  getStatus: (studentId: string, date: string) => AttendanceStatus | undefined,
+  getStatus: (studentId: string, date: string) => AttendanceStatus,
   isPending: (studentId: string, date: string) => boolean,
   onSet: (studentId: string, date: string, status: AttendanceStatus) => void,
 ) {
@@ -48,19 +48,24 @@ export function useRegisterColumns(
     for (let day = 1; day <= totalDays; day++) {
       const date = `${month}-${String(day).padStart(2, '0')}`
       const isHoliday = holidays.has(date)
+      const targetDate = new Date(`${date}T00:00:00`)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const isFuture = targetDate > today
       dayColumns.push({
         id: date,
         width: 52,
         header: day,
         cell: (row) => {
-          const status = getStatus(row.id, date) ?? 'unmarked'
+          const status = getStatus(row.id, date)
           return (
             <StatusCell
               status={status}
               holiday={isHoliday}
+              disabled={isFuture}
               pending={isPending(row.id, date)}
-              title={`${row.name} ${day}`}
-              onClick={() => !isHoliday && onSet(row.id, date, 'present')}
+              title={isFuture ? 'Future dates cannot be marked' : `${row.name} ${day}`}
+              onClick={() => !isHoliday && !isFuture && onSet(row.id, date, nextStatus(status))}
             />
           )
         },
@@ -68,5 +73,5 @@ export function useRegisterColumns(
     }
 
     return [...stickyColumns, ...dayColumns]
-  }, [students, month, holidays, getStatus, isPending, onSet])
+  }, [month, holidays, getStatus, isPending, onSet])
 }

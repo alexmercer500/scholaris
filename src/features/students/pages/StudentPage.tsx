@@ -19,6 +19,7 @@ export function StudentsPage() {
   const { data = [], isLoading, error } = useGetStudentsQuery(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') ?? '1') - 1;
+  const pageSizeParam = searchParams.get('pageSize') ?? '10';
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search);
@@ -33,6 +34,11 @@ export function StudentsPage() {
     );
   }, [data, debouncedSearch]);
 
+  const pageSize = pageSizeParam === 'all'
+    ? Math.max(filteredData.length, 1)
+    : Number(pageSizeParam) || 10;
+  const paginationPageSize = pageSizeParam === 'all' ? 'all' : pageSize;
+
   const onPageChange = (newPageIndex: number) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev)
@@ -40,16 +46,26 @@ export function StudentsPage() {
       return params
     })
   }
+
+  const onPageSizeChange = (newPageSize: number | 'all') => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev)
+      params.set('pageSize', String(newPageSize))
+      params.set('page', '1')
+      return params
+    })
+  }
+
   const table = useReactTable({
     data: filteredData,
     columns: studentColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { pagination: { pageIndex: page, pageSize: 10 } },
+    state: { pagination: { pageIndex: page, pageSize } },
     onPaginationChange: (updater) => {
       const nextPageIndex = typeof updater === 'function' ?
-        updater({ pageIndex: page, pageSize: 10 }).pageIndex : updater.pageIndex;
+        updater({ pageIndex: page, pageSize }).pageIndex : updater.pageIndex;
 
       onPageChange(nextPageIndex)
     }
@@ -155,9 +171,11 @@ export function StudentsPage() {
           {filteredData.length > 0 && (
             <Pagination
               pageIndex={page}
-              pageSize={10}
+              pageSize={paginationPageSize}
               totalItems={filteredData.length}
               onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+              pageSizeOptions={[10, 25, 50, 100, 'all']}
               className="sticky bottom-0 mt-auto"
             />
           )}

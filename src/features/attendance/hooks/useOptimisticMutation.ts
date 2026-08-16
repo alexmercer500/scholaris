@@ -17,8 +17,9 @@ type Action =
   | { type: 'optimistic'; change: RegisterChange }
   | { type: 'track'; change: RegisterChange }
   | { type: 'resolve'; change: RegisterChange; version: CellValue }
-  | { type: 'fail'; change: RegisterChange }
+  | { type: 'rollback'; change: RegisterChange }
   | { type: 'queueFailed'; change: RegisterChange }
+  | { type: 'clearFailed'; changes: RegisterChange[] }
 
 function cellKey(studentId: string, date: string) {
   return `${studentId}|${date}`
@@ -45,12 +46,32 @@ function reducer(state: State, action: Action): State {
       const pending = state.pending.filter((item) => item !== key)
       return { ...state, pending, overlay: { ...state.overlay, [key]: action.version } }
     }
-    case 'fail': {
+    case 'rollback': {
       const key = cellKey(action.change.studentId, action.change.date)
-      return { ...state, pending: state.pending.filter((item) => item !== key) }
+      const overlay = { ...state.overlay }
+      delete overlay[key]
+      return { ...state, pending: state.pending.filter((item) => item !== key), overlay }
     }
     case 'queueFailed': {
+      const exists = state.failed.some(
+        (change) =>
+          change.studentId === action.change.studentId &&
+          change.date === action.change.date &&
+          change.status === action.change.status,
+      )
+      if (exists) return state
       return { ...state, failed: [...state.failed, action.change] }
+    }
+    case 'clearFailed': {
+      const resolved = new Set(
+        action.changes.map((change) => `${change.studentId}|${change.date}|${change.status}`),
+      )
+      return {
+        ...state,
+        failed: state.failed.filter(
+          (change) => !resolved.has(`${change.studentId}|${change.date}|${change.status}`),
+        ),
+      }
     }
     default:
       return state
@@ -78,12 +99,20 @@ export function useOptimisticMutation(classId: string) {
 
         if (response.ok) {
           const month = queue[0]?.date.slice(0, 7)
+          for (const change of queue) {
+            dispatch({
+              type: 'resolve',
+              change,
+              version: { status: change.status, updatedAt: new Date().toISOString() },
+            })
+          }
+          dispatch({ type: 'clearFailed', changes: queue })
           if (month) {
             queryClient.invalidateQueries({ queryKey: ['attendance', classId, month] })
           }
         } else {
           for (const change of queue) {
-            dispatch({ type: 'fail', change })
+            dispatch({ type: 'rollback', change })
             dispatch({ type: 'queueFailed', change })
           }
         }
@@ -107,7 +136,6 @@ export function useOptimisticMutation(classId: string) {
   const retryFailed = useCallback(() => {
     if (state.failed.length === 0) return
     const queue = state.failed
-    dispatch({ type: 'fail', change: queue[0] })
     void send(queue)
   }, [state.failed, send])
 

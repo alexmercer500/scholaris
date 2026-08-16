@@ -29,7 +29,7 @@ interface CellProps<T> {
 function GridCell<T>({ row, column }: CellProps<T>) {
   return (
     <div
-      className="flex items-center overflow-hidden"
+      className="flex h-full items-center overflow-hidden"
       style={{ width: column.width, minWidth: column.width }}
     >
       {column.cell(row, column)}
@@ -105,16 +105,20 @@ export function DataGrid<T>({
                 </div>
               ))}
             </div>
-            <div className="flex bg-surface-container border-b border-outline-variant/30">
+            <div
+              className="relative bg-surface-container border-b border-outline-variant/30"
+              style={{ width: totalScrollWidth, minWidth: totalScrollWidth }}
+            >
               {columnsVirtual.map((virtualColumn) => {
                 const column = scrollColumns[virtualColumn.index]
                 return (
                   <div
                     key={column.id}
-                    className="flex items-center font-label font-bold text-on-surface-variant"
+                    className="absolute top-0 left-0 flex items-center font-label font-bold text-on-surface-variant"
                     style={{
                       width: column.width,
                       minWidth: column.width,
+                      height: headerHeight,
                       transform: `translateX(${virtualColumn.start}px)`,
                     }}
                   >
@@ -136,24 +140,30 @@ export function DataGrid<T>({
                 className="absolute top-0 left-0 flex"
                 style={{ height: rowHeight, transform: `translateY(${virtualRow.start + headerHeight}px)` }}
               >
-                <div className="sticky left-0 z-10 flex bg-surface-container-lowest border-b border-outline-variant/10">
+                <div
+                  className="sticky left-0 z-10 flex bg-surface-container-lowest border-b border-outline-variant/10"
+                  style={{ height: rowHeight }}
+                >
                   {stickyColumns.map((column) => (
                     <div
                       key={cellKey(key, column.id)}
-                      className="border-r border-outline-variant/10"
+                      className="h-full border-r border-outline-variant/10"
                       style={{ width: column.width, minWidth: column.width }}
                     >
                       <MemoCell row={row} column={column} />
                     </div>
                   ))}
                 </div>
-                <div className="flex">
+                <div
+                  className="relative"
+                  style={{ width: totalScrollWidth, minWidth: totalScrollWidth, height: rowHeight }}
+                >
                   {columnsVirtual.map((virtualColumn) => {
                     const column = scrollColumns[virtualColumn.index]
                     return (
                       <div
                         key={cellKey(key, column.id)}
-                        className="border-r border-outline-variant/10"
+                        className="absolute top-0 left-0 h-full border-r border-outline-variant/10"
                         style={{
                           width: column.width,
                           minWidth: column.width,

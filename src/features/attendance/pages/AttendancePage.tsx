@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useCallback, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
 import { Search, RefreshCw, Calendar, ClipboardEdit } from 'lucide-react'
 import { toast } from 'sonner'
 import { TopAppBar } from '@components/layout/TopAppBar'
 import { DataGrid } from '@components/ui/DataGrid'
+import { Pagination } from '@components/ui/Pagination'
 import { BulkCorrectionDrawer, type BulkCell } from '../components/BulkCorrectionDrawer'
-import { useUrlState } from '../hooks/useUrlState'
 import { useRegister } from '../api/attendanceApi'
 import { useOptimisticMutation } from '../hooks/useOptimisticMutation'
 import { useRegisterColumns } from '../hooks/useRegisterColumns'
@@ -13,6 +13,7 @@ import { getClassOptions } from '@mocks/db/attendance'
 import type { AttendanceStatus } from '../types'
 
 const CLASSES = getClassOptions()
+const DEFAULT_PAGE_SIZE = 10
 
 function monthOptions(): string[] {
   const options: string[] = []
@@ -26,10 +27,69 @@ function monthOptions(): string[] {
 
 export function AttendancePage() {
   const navigate = useNavigate()
-  const [classId, setClassId] = useUrlState<string>('classId', 'g11a')
-  const [month, setMonth] = useUrlState<string>('month', monthOptions()[8] ?? '')
-  const [search, setSearch] = useUrlState<string>('search', '')
-  const [filter, setFilter] = useUrlState<AttendanceStatus | ''>('filter', '')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const classId = searchParams.get('classId') ?? 'g11a'
+  const month = searchParams.get('month') ?? (monthOptions()[8] ?? '')
+  const search = searchParams.get('search') ?? ''
+  const filter = (searchParams.get('filter') as AttendanceStatus | '') ?? ''
+  const page = Number(searchParams.get('page') ?? '1') - 1
+  const pageSizeParam = searchParams.get('pageSize') ?? String(DEFAULT_PAGE_SIZE)
+  const pageSize: number | 'all' =
+    pageSizeParam === 'all'
+      ? 'all'
+      : Number(pageSizeParam) || DEFAULT_PAGE_SIZE
+  const pageIndex = Math.max(0, page)
+
+  const setClassId = useCallback(
+    (nextClassId: string) => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        params.set('classId', nextClassId)
+        params.set('page', '1')
+        return params
+      })
+    },
+    [setSearchParams],
+  )
+
+  const setMonth = useCallback(
+    (nextMonth: string) => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        params.set('month', nextMonth)
+        params.set('page', '1')
+        return params
+      })
+    },
+    [setSearchParams],
+  )
+
+  const setSearch = useCallback(
+    (nextSearch: string) => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        if (nextSearch) params.set('search', nextSearch)
+        else params.delete('search')
+        params.set('page', '1')
+        return params
+      })
+    },
+    [setSearchParams],
+  )
+
+  const setFilter = useCallback(
+    (nextFilter: AttendanceStatus | '') => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        if (nextFilter) params.set('filter', nextFilter)
+        else params.delete('filter')
+        params.set('page', '1')
+        return params
+      })
+    },
+    [setSearchParams],
+  )
 
   const registerQuery = useRegister(classId, month)
   const optimistic = useOptimisticMutation(classId)
@@ -58,6 +118,25 @@ export function AttendancePage() {
     [registerQuery.data],
   )
 
+  const entryStatusByCell = useMemo(() => {
+    const map = new Map<string, AttendanceStatus>()
+    for (const entry of registerQuery.data?.entries ?? []) {
+      map.set(`${entry.studentId}|${entry.date}`, entry.status)
+    }
+    return map
+  }, [registerQuery.data])
+
+  const getCellStatus = useCallback(
+    (studentId: string, date: string): AttendanceStatus => {
+      return (
+        optimistic.getStatus(studentId, date) ??
+        entryStatusByCell.get(`${studentId}|${date}`) ??
+        'unmarked'
+      )
+    },
+    [entryStatusByCell, optimistic],
+  )
+
   const rows = useMemo(() => {
     const query = search.trim().toLowerCase()
     return (registerQuery.data?.students ?? []).filter((student) => {
@@ -65,21 +144,63 @@ export function AttendancePage() {
         !query ||
         student.name.toLowerCase().includes(query) ||
         student.rollNumber.toLowerCase().includes(query)
-      return matchesSearch
-    })
-  }, [registerQuery.data, search])
+      if (!matchesSearch) return false
+      if (!filter) return true
 
-  const getStatus = optimistic.getStatus
+      const [year, monthIndex] = month.split('-').map(Number)
+      const totalDays = month ? new Date(year, monthIndex, 0).getDate() : 0
+      for (let day = 1; day <= totalDays; day++) {
+        const date = `${month}-${String(day).padStart(2, '0')}`
+        if (getCellStatus(student.id, date) === filter) return true
+      }
+      return false
+    })
+  }, [filter, getCellStatus, month, registerQuery.data, search])
+
+  const effectivePageSize = pageSize === 'all' ? Math.max(rows.length, 1) : pageSize
+  const totalPages = Math.max(1, Math.ceil(rows.length / effectivePageSize))
+  const safePageIndex = Math.min(pageIndex, totalPages - 1)
+  const paginatedRows = useMemo(() => {
+    if (pageSize === 'all') return rows
+    const start = safePageIndex * pageSize
+    return rows.slice(start, start + pageSize)
+  }, [pageSize, rows, safePageIndex])
+
+  const handlePageChange = useCallback(
+    (nextPageIndex: number) => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        params.set('page', String(nextPageIndex + 1))
+        return params
+      })
+    },
+    [setSearchParams],
+  )
+
+  const handlePageSizeChange = useCallback(
+    (nextPageSize: number | 'all') => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev)
+        params.set('pageSize', String(nextPageSize))
+        params.set('page', '1')
+        return params
+      })
+    },
+    [setSearchParams],
+  )
+
   const isPending = optimistic.isPending
-  const handleSet = (studentId: string, date: string, status: AttendanceStatus) => {
-    optimistic.markCell(studentId, date, status)
-  }
+  const handleSet = useCallback(
+    (studentId: string, date: string, status: AttendanceStatus) => {
+      optimistic.markCell(studentId, date, status)
+    },
+    [optimistic],
+  )
 
   const columns = useRegisterColumns(
-    rows,
     month,
     holidays,
-    getStatus,
+    getCellStatus,
     isPending,
     handleSet,
   )
@@ -102,7 +223,7 @@ export function AttendancePage() {
   const today = `${month}-${String(new Date().getDate()).padStart(2, '0')}`
   const bulkCells: BulkCell[] = holidays.has(today)
     ? []
-    : rows.map((row) => ({ studentId: row.id, date: today }))
+    : paginatedRows.map((row) => ({ studentId: row.id, date: today }))
 
   const applyBulk = (
     changes: Array<{ studentId: string; date: string; status: AttendanceStatus; reason?: string }>,
@@ -126,7 +247,9 @@ export function AttendancePage() {
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <select
           value={classId}
-          onChange={(e) => setClassId(e.target.value)}
+          onChange={(e) => {
+            setClassId(e.target.value)
+          }}
           className="px-3 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary"
         >
           {CLASSES.map((cls) => (
@@ -136,7 +259,9 @@ export function AttendancePage() {
 
         <select
           value={month}
-          onChange={(e) => setMonth(e.target.value)}
+          onChange={(e) => {
+            setMonth(e.target.value)
+          }}
           className="px-3 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary"
         >
           {monthOptions().map((m) => (
@@ -148,7 +273,9 @@ export function AttendancePage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+            }}
             placeholder="Search student..."
             className="pl-9 pr-3 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary w-56"
           />
@@ -156,7 +283,9 @@ export function AttendancePage() {
 
         <select
           value={filter}
-          onChange={(e) => setFilter(e.target.value as AttendanceStatus | '')}
+          onChange={(e) => {
+            setFilter(e.target.value as AttendanceStatus | '')
+          }}
           className="px-3 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary"
         >
           <option value="">All statuses</option>
@@ -214,7 +343,7 @@ export function AttendancePage() {
         </div>
       ) : (
         <DataGrid
-          rows={rows}
+          rows={paginatedRows}
           columns={columns}
           rowHeight={40}
           headerHeight={36}
@@ -222,6 +351,18 @@ export function AttendancePage() {
           rowKey={(row) => row.id}
           cellKey={(key, columnId) => `${key}|${columnId}`}
           emptyMessage="No students match"
+        />
+      )}
+
+      {!registerQuery.isLoading && !registerQuery.isError && rows.length > 0 && (
+        <Pagination
+          pageIndex={safePageIndex}
+          pageSize={pageSize}
+          totalItems={rows.length}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[10, 25, 50, 100, 'all']}
+          className="mt-3 rounded-xl border border-outline-variant/30 bg-surface-container-lowest"
         />
       )}
 

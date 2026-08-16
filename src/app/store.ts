@@ -10,8 +10,11 @@ export const store = configureStore({
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
-    [studentApi.reducerPath]: studentApi.reducer
+    [studentApi.reducerPath]: studentApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apis.map((api) => api.middleware)),
 })
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

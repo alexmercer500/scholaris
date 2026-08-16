@@ -25,6 +25,8 @@ export function findUserByCredentials(
 ): Omit<User, 'password'> | null {
   const user = demoUsers.find((u) => u.email === email && u.password === password)
   if (!user) return null
-  const { password: _pw, ...safeUser } = user
+
+  const { password: unusedPassword, ...safeUser } = user
+  void unusedPassword
   return safeUser
 }

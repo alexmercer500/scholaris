@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { useNavigate, useParams, Link } from 'react-router'
 import { Pencil, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
@@ -58,12 +58,16 @@ export function StudentDetailPage() {
 
   // Controlled form state (resets when we load or enter edit mode)
   const [form, setForm] = useState<Partial<Student>>({})
-  useEffect(() => {
-    if (student) setForm(student)
-  }, [student])
 
   const set = (key: keyof Student) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }))
+
+  const startEditing = () => {
+    if (student) {
+      setForm(student)
+    }
+    setEditing(true)
+  }
 
   if (isLoading) {
     return (
@@ -138,7 +142,7 @@ export function StudentDetailPage() {
               <ArrowLeft className="w-4 h-4" /> Back
             </Button>
             {!editing && (
-              <Button size="sm" onClick={() => setEditing(true)}>
+              <Button size="sm" onClick={startEditing}>
                 <Pencil className="w-4 h-4" /> Edit
               </Button>
             )}
