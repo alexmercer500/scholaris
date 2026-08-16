@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { useNavigate, useParams, Link } from 'react-router'
 import { Pencil, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
@@ -12,6 +12,13 @@ import {
 } from "../api/studentApi";
 import type { Student } from "@models/models";
 import { demoClasses } from "@mocks/db/classes";
+import { ErrorBoundary } from "@components/ui/ErrorBoundary";
+
+const StudentAttendancePanel = lazy(() =>
+  import('@features/attendance/components/StudentAttendancePanel').then((m) => ({
+    default: m.StudentAttendancePanel,
+  })),
+)
 
 function getInitials(name: string): string {
   return name
@@ -205,6 +212,20 @@ export function StudentDetailPage() {
           </dl>
         )}
       </div>
+
+      {!editing && (
+        <div className="mt-6">
+          <ErrorBoundary fallback={null}>
+            <Suspense
+              fallback={
+                <div className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-5 h-32 animate-pulse" />
+              }
+            >
+              <StudentAttendancePanel studentId={student.id} classId={student.classId} />
+            </Suspense>
+          </ErrorBoundary>
+        </div>
+      )}
     </>
   )
 }

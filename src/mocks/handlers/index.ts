@@ -2,6 +2,7 @@ import { http } from 'msw'
 import { authHandlers } from './auth'
 import { dashBoardHandlers } from './dashboard'
 import { studentsHandlers } from './students'
+import { attendanceHandlers } from './attendance'
 
 export const handlers = [
   http.get('/api/health', () => {
@@ -9,6 +10,7 @@ export const handlers = [
   }),
   ...authHandlers,
   ...dashBoardHandlers,
-  ...studentsHandlers
+  ...studentsHandlers,
+  ...attendanceHandlers,
 ]
 
