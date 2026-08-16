@@ -4,23 +4,34 @@ import type {
   RegisterResponse,
   RosterStudent,
 } from '@features/attendance/types'
+import { demoStudents } from './students'
 
 const CLASS_IDS = ['g10a', 'g10b', 'g11a', 'g11b', 'g12a', 'g12b']
 
-const ROSTER: Record<string, RosterStudent[]> = Object.fromEntries(
-  CLASS_IDS.map((classId) => {
-    const grade = classId.slice(1, 3)
-    const section = classId.slice(3).toUpperCase()
-    const count = 200
-    const students: RosterStudent[] = Array.from({ length: count }, (_, i) => ({
-      id: `${classId}-s${i + 1}`,
-      rollNumber: `${grade}${section}-${String(i + 1).padStart(3, '0')}`,
-      name: `Student ${classId.toUpperCase()} ${i + 1}`,
-      status: i % 12 === 0 ? 'inactive' : i % 9 === 0 ? 'transferred' : 'active',
-    }))
-    return [classId, students]
-  }),
-)
+// Build ROSTER with same students and names as demoStudents for complete consistency
+function buildRoster(): Record<string, RosterStudent[]> {
+  return Object.fromEntries(
+    CLASS_IDS.map((classId) => {
+      // Get the class index (0-5) corresponding to this classId
+      const classIndex = CLASS_IDS.indexOf(classId)
+
+      // Distribute the 100 demoStudents across 6 classes using modulo matching
+      // demoStudents[i] goes to class (i % 6)
+      const students: RosterStudent[] = demoStudents
+        .filter((_, i) => i % 6 === classIndex)
+        .map((student) => ({
+          id: student.id,
+          rollNumber: student.rollNumber,
+          name: student.name,
+          status: student.status as any,
+        }))
+
+      return [classId, students]
+    }),
+  )
+}
+
+const ROSTER = buildRoster()
 
 function daysInMonth(month: string): number {
   const [y, m] = month.split('-').map(Number)
@@ -63,11 +74,12 @@ function registerFor(classId: string, month: string): RegisterResponse {
     if (targetDate > today) continue
 
     for (const student of students) {
-      const index = Number(student.id.split('-s')[1]) + d
+      // Extract student number from ID (s123 -> 123)
+      const studentNum = Number(student.id.slice(1))
       entries.push({
         studentId: student.id,
         date,
-        status: statusFor(index),
+        status: statusFor(studentNum + d),
         updatedAt: '2026-08-11T09:00:00.000Z',
       })
     }

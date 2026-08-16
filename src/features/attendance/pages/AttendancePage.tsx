@@ -18,7 +18,7 @@ const DEFAULT_PAGE_SIZE = 10
 function monthOptions(): string[] {
   const options: string[] = []
   const now = new Date()
-  for (let i = 8; i >= 0; i--) {
+  for (let i = 11; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
     options.push(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`)
   }

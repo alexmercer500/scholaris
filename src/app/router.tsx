@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from 'react'
+import { lazy, Suspense, type ReactNode, type ComponentType } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { LoginPage } from '@features/auth/pages/LoginPage'
 import RequireAuth from '@features/auth/components/RequireAuth'
@@ -9,12 +9,34 @@ import { DashboardLayout } from '@components/layout/DashboardLayout'
 import { StudentsPage } from '@features/students/pages/StudentPage'
 import { StudentDetailPage } from '@features/students/pages/StudentDetailPage'
 
-const AttendancePage = lazy(() =>
-  import('@features/attendance/pages/AttendancePage').then((m) => ({ default: m.AttendancePage })),
-)
-const DaySheetPage = lazy(() =>
-  import('@features/attendance/pages/DaySheetPage').then((m) => ({ default: m.DaySheetPage })),
-)
+const lazyPage = <T extends ComponentType<any>>(
+  importFn: () => Promise<Record<string, T>>,
+  exportName: string,
+) =>
+  lazy(() =>
+    importFn().then((module) => ({
+      default: module[exportName],
+    })),
+  );
+const AttendancePage = lazyPage(
+  () => import('@features/attendance/pages/AttendancePage'),
+  'AttendancePage'
+);
+
+const DaySheetPage = lazyPage(
+  () => import('@features/attendance/pages/DaySheetPage'),
+  'DaySheetPage'
+);
+
+const FacultyPage = lazyPage(
+  () => import('@features/faculty/page/FacultyPage'),
+  'FacultyPage'
+);
+
+const SettingsPage = lazyPage(
+  () => import('@features/settings/page/SettingsPage'),
+  'SettingsPage'
+);
 
 function withSuspense(element: ReactNode) {
   return (
@@ -45,6 +67,8 @@ const router = createBrowserRouter([
       { path: '/students/:id', element: <StudentDetailPage /> },
       { path: '/attendance', element: withSuspense(<AttendancePage />) },
       { path: '/attendance/:date', element: withSuspense(<DaySheetPage />) },
+      { path: '/faculty', element: withSuspense(<FacultyPage />) },
+      { path: '/settings', element: withSuspense(<SettingsPage />) },
     ],
   },
   { path: '*', element: <NotFound /> },

@@ -46,16 +46,17 @@ function hashIndex(i: number, mod: number): number {
 }
 
 /** Builds a 1-based padded identifier. */
-function pad(n: number): string {
-  return String(n).padStart(3, '0')
+function pad(n: number, length: number = 3): string {
+  return String(n).padStart(length, '0')
 }
 
 /**
- * The 100 seed students. `id` matches the list index (s1..s100) so the
- * roll number and id stay consistent across the app.
+ * The 1,200 seed students for virtualization testing (scale to 1,200 × 31 columns ≈ 37k cells).
+ * Distributed: 200 students per class across 6 classes.
+ * `id` matches the list index (s1..s1200) so the roll number and id stay consistent across the app.
  */
 function buildSeed(): Student[] {
-  return Array.from({ length: 100 }, (_, i) => {
+  return Array.from({ length: 1200 }, (_, i) => {
     const firstName = FIRST_NAMES[hashIndex(i, FIRST_NAMES.length)]
     const lastName = LAST_NAMES[hashIndex(i + 17, LAST_NAMES.length)]
     const name = `${firstName} ${lastName}`
@@ -63,14 +64,14 @@ function buildSeed(): Student[] {
 
     return {
       id: `s${i + 1}`,
-      rollNumber: `R${pad(i + 1)}`,
+      rollNumber: `R${pad(i + 1, 4)}`,
       name,
       classId,
       section: 'A',
       guardian: GUARDIANS[hashIndex(i + 5, GUARDIANS.length)],
-      contact: `+91-90${pad(i + 1)}`,
+      contact: `+91-${pad(9000 + (i % 10000), 5)}`,
       status: i % 10 === 0 ? 'inactive' : i % 7 === 0 ? 'transferred' : 'active',
-      enrolmentDate: `2024-06-${pad((i % 28) + 1)}`,
+      enrolmentDate: `2024-06-${pad((i % 28) + 1, 2)}`,
       attendancePercentage: 70 + (i % 30),
     }
   })
