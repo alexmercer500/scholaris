@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { useNavigate, useParams, Link } from 'react-router'
 import { Pencil, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
@@ -6,7 +6,6 @@ import { TopAppBar } from "@components/layout/TopAppBar";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import { Skeleton } from "@components/ui/Skeleton";
-import { getInitials } from '@lib/helper';
 import {
   useGetStudentQuery,
   useUpdateStudentMutation,
@@ -21,10 +20,21 @@ const StudentAttendancePanel = lazy(() =>
   })),
 )
 
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+}
+
 function classNameFor(classId: string): string {
   return demoClasses.find((c) => c.id === classId)?.name ?? classId
 }
 
+/** A labelled value row used in the read-only detail grid. */
 function Field({ label, value }: { label: string; value?: string }) {
   return (
     <div>
@@ -46,17 +56,11 @@ export function StudentDetailPage() {
   const { data: student, isLoading, error } = useGetStudentQuery(id)
   const [updateStudent, { isLoading: saving }] = useUpdateStudentMutation()
 
-  /**
-   * Only the fields the user has actually touched live in state; the form
-   * value is derived from the server data on every render. This keeps the
-   * fetched student as the single source of truth — no effect needed to sync
-   * the two, and a refetch can't silently clobber an in-progress edit.
-   */
-  const [edits, setEdits] = useState<Partial<Student>>({})
-  const form: Partial<Student> = { ...student, ...edits }
+  // Controlled form state (resets when we load or enter edit mode)
+  const [form, setForm] = useState<Partial<Student>>({})
 
   const set = (key: keyof Student) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setEdits((prev) => ({ ...prev, [key]: e.target.value }))
+    setForm((prev) => ({ ...prev, [key]: e.target.value }))
 
   const startEditing = () => {
     if (student) {
@@ -93,13 +97,12 @@ export function StudentDetailPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await updateStudent({ id: student.id, updates: edits }).unwrap()
+      await updateStudent({ id: student.id, updates: form }).unwrap()
       toast.success('Student updated')
-      setEdits({})
       setEditing(false)
     } catch (err) {
-      console.log(err);
-      toast.error('Failed to update student')
+      const message = (err as { data?: { message?: string } })?.data?.message
+      toast.error(message ?? 'Failed to update student')
     }
   }
 
@@ -194,14 +197,7 @@ export function StudentDetailPage() {
               <Button type="submit" disabled={saving}>
                 <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setEdits({})
-                  setEditing(false)
-                }}
-                disabled={saving}
-              >
+              <Button variant="secondary" onClick={() => setEditing(false)} disabled={saving}>
                 <X className="w-4 h-4" /> Cancel
               </Button>
             </div>
