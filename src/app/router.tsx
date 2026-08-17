@@ -9,7 +9,7 @@ import { DashboardLayout } from '@components/layout/DashboardLayout'
 import { StudentsPage } from '@features/students/pages/StudentPage'
 import { StudentDetailPage } from '@features/students/pages/StudentDetailPage'
 
-const lazyPage = <T extends ComponentType<any>>(
+const lazyPage = <T extends ComponentType<unknown>>(
   importFn: () => Promise<Record<string, T>>,
   exportName: string,
 ) =>

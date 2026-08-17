@@ -6,9 +6,9 @@ function randomLatency(): number {
   return 300 + Math.floor(Math.random() * 900)
 }
 
-function maybeFailMutation(): boolean {
-  return Math.random() < 0.15
-}
+// function maybeFailMutation(): boolean {
+//   return Math.random() < 0.15
+// }
 
 export const attendanceHandlers = [
   http.get('/api/attendance', async ({ request }) => {
@@ -36,12 +36,12 @@ export const attendanceHandlers = [
   http.patch('/api/attendance', async ({ request }) => {
     await delay(randomLatency())
 
-    if (maybeFailMutation()) {
-      return HttpResponse.json(
-        { message: 'Upstream service unavailable' },
-        { status: 503 },
-      )
-    }
+    // if (maybeFailMutation()) {
+    //   return HttpResponse.json(
+    //     { message: 'Upstream service unavailable' },
+    //     { status: 503 },
+    //   )
+    // }
 
     const body = (await request.json()) as {
       classId: string

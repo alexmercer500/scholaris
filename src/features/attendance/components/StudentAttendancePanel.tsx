@@ -3,12 +3,6 @@ import { useRegister } from '../api/attendanceApi'
 import { STATUS_LABELS, STATUS_COLORS } from '../statusMeta'
 import type { AttendanceStatus } from '../types'
 
-const CLASS_MAP: Record<string, string> = {
-  c1: 'g10a',
-  c2: 'g11a',
-  c3: 'g12a',
-}
-
 function currentMonth(): string {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -20,7 +14,7 @@ interface StudentAttendancePanelProps {
 }
 
 export function StudentAttendancePanel({ studentId, classId }: StudentAttendancePanelProps) {
-  const attendanceClass = CLASS_MAP[classId] ?? classId
+  const attendanceClass = classId
   const month = currentMonth()
   const { data, isLoading, isError } = useRegister(attendanceClass, month)
 
@@ -28,7 +22,7 @@ export function StudentAttendancePanel({ studentId, classId }: StudentAttendance
 
   const summary = useMemo(() => {
     if (!data) return null
-    const mine = data.entries.filter((entry) => entry.studentId === attendanceStudentId)
+    const mine = data.entries.filter((entry) => entry.studentId === studentId)
     const counts: Record<string, number> = {}
     for (const entry of mine) {
       counts[entry.status] = (counts[entry.status] ?? 0) + 1

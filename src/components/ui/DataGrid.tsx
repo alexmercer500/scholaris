@@ -15,7 +15,7 @@ export interface DataGridProps<T> {
   columns: Column<T>[]
   rowHeight?: number
   headerHeight?: number
-  bodyHeight?: number
+  bodyHeight?: number | string
   rowKey: (row: T) => string
   cellKey: (rowKey: string, columnId: string) => string
   emptyMessage?: string
@@ -76,10 +76,10 @@ export function DataGrid<T>({
   const columnsVirtual = columnVirtualizer.getVirtualItems()
 
   return (
-    <div className="flex flex-col overflow-hidden border border-outline-variant/30 rounded-xl bg-surface-container-lowest">
+    <div className="flex flex-col min-h-0 flex-1 overflow-hidden border border-outline-variant/30 rounded-xl bg-surface-container-lowest">
       <div
         ref={scrollRef}
-        className="relative overflow-auto scrollbar-thin"
+        className="relative flex-1 min-h-0 overflow-auto scrollbar-thin"
         style={{ height: bodyHeight }}
       >
         <div
@@ -88,7 +88,7 @@ export function DataGrid<T>({
         >
           {/* Sticky header (day names) */}
           <div
-            className="absolute top-0 left-0 flex z-20"
+            className="absolute top-0 left-0 flex z-20 sticky"
             style={{ height: headerHeight, width: totalWidth }}
           >
             <div

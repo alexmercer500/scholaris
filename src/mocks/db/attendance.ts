@@ -23,7 +23,7 @@ function buildRoster(): Record<string, RosterStudent[]> {
           id: student.id,
           rollNumber: student.rollNumber,
           name: student.name,
-          status: student.status as any,
+          status: student.status as RosterStudent['status'],
         }))
 
       return [classId, students]
@@ -70,8 +70,9 @@ function registerFor(classId: string, month: string): RegisterResponse {
     const date = isoDate(month, d)
     if (holidays.includes(date)) continue
 
+    // Today is left unmarked so teachers start the day with an empty column.
     const targetDate = new Date(`${date}T00:00:00`)
-    if (targetDate > today) continue
+    if (targetDate >= today) continue
 
     for (const student of students) {
       // Extract student number from ID (s123 -> 123)
@@ -119,6 +120,15 @@ export function applyChanges(
       entry.status = change.status
       if (change.reason !== undefined) entry.reason = change.reason
       entry.updatedAt = new Date().toISOString()
+    } else {
+      // Unmarked days (today included) have no seeded entry, so create one.
+      registerCache[key].entries.push({
+        studentId: change.studentId,
+        date: change.date,
+        status: change.status,
+        reason: change.reason,
+        updatedAt: new Date().toISOString(),
+      })
     }
   }
   return { applied: changes.length }

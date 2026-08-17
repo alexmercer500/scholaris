@@ -25,12 +25,17 @@ function monthOptions(): string[] {
   return options
 }
 
+function currentMonth(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
 export function AttendancePage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const classId = searchParams.get('classId') ?? 'g11a'
-  const month = searchParams.get('month') ?? (monthOptions()[8] ?? '')
+  const month = searchParams.get('month') ?? currentMonth()
   const search = searchParams.get('search') ?? ''
   const filter = (searchParams.get('filter') as AttendanceStatus | '') ?? ''
   const page = Number(searchParams.get('page') ?? '1') - 1
@@ -244,7 +249,7 @@ export function AttendancePage() {
         </div>
       </TopAppBar>
 
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4 shrink-0">
         <select
           value={classId}
           onChange={(e) => {
@@ -336,9 +341,9 @@ export function AttendancePage() {
       </div>
 
       {registerQuery.isLoading ? (
-        <div className="flex items-center justify-center h-64 text-on-surface-variant">Loading register...</div>
+        <div className="flex flex-1 min-h-0 items-center justify-center text-on-surface-variant">Loading register...</div>
       ) : registerQuery.isError ? (
-        <div className="flex items-center justify-center h-64 text-error">
+        <div className="flex flex-1 min-h-0 items-center justify-center text-error">
           Failed to load register
         </div>
       ) : (
@@ -347,7 +352,7 @@ export function AttendancePage() {
           columns={columns}
           rowHeight={40}
           headerHeight={36}
-          bodyHeight={520}
+          bodyHeight="100%"
           rowKey={(row) => row.id}
           cellKey={(key, columnId) => `${key}|${columnId}`}
           emptyMessage="No students match"
@@ -362,7 +367,7 @@ export function AttendancePage() {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
           pageSizeOptions={[10, 25, 50, 100, 'all']}
-          className="mt-3 rounded-xl border border-outline-variant/30 bg-surface-container-lowest"
+          className="mt-3 shrink-0 rounded-xl border border-outline-variant/30 bg-surface-container-lowest"
         />
       )}
 
