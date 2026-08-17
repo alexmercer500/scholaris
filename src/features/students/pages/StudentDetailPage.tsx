@@ -97,7 +97,8 @@ export function StudentDetailPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await updateStudent({ id: student.id, updates: form }).unwrap()
+      const { rollNumber: _immutableRollNumber, ...updates } = form
+      await updateStudent({ id: student.id, updates }).unwrap()
       toast.success('Student updated')
       setEditing(false)
     } catch (err) {
@@ -153,7 +154,15 @@ export function StudentDetailPage() {
           /* ---- Edit form ---- */
           <form onSubmit={handleSubmit} className="p-6 grid gap-6 md:grid-cols-2">
             <Input label="Student Name" id="name" value={form.name ?? ''} onChange={set('name')} />
-            <Input label="Roll Number" id="roll" value={form.rollNumber ?? ''} onChange={set('rollNumber')} />
+            <div className="space-y-2">
+              <span className="block text-sm font-semibold text-on-surface">Roll Number</span>
+              <p className="px-3 py-3 border border-outline-variant/40 rounded-[12px] bg-surface-container-low text-on-surface-variant font-body">
+                {student.rollNumber}
+              </p>
+              <p className="text-sm text-on-surface-variant">
+                Roll numbers are permanent and cannot be changed.
+              </p>
+            </div>
 
             <div className="space-y-2">
               <label htmlFor="class" className="block text-sm font-semibold text-on-surface">Class</label>

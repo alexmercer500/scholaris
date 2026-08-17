@@ -96,6 +96,13 @@ export function resetStudents(): void {
   demoStudents.splice(0, demoStudents.length, ...fresh)
 }
 
+export function isRollNumberTaken(rollNumber: string, exceptId: string): boolean {
+  const normalised = rollNumber.trim().toLowerCase()
+  return demoStudents.some(
+    (s) => s.id !== exceptId && s.rollNumber.trim().toLowerCase() === normalised,
+  )
+}
+
 export function updateStudent(id: string, updates: Partial<Student>): Student | undefined {
   const idx = demoStudents.findIndex((s) => s.id === id)
   if (idx === -1) return undefined
