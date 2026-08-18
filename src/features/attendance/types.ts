@@ -46,6 +46,18 @@ export interface MarkResponse {
   entries: RegisterEntry[]
 }
 
+export interface MarkAllRequest {
+  classId: string
+  date: string
+  status: AttendanceStatus
+}
+
+export interface MarkAllResponse {
+  applied: number
+  skipped: number
+  entries: RegisterEntry[]
+}
+
 export interface ConflictResponse {
   code: 'STALE_WRITE'
   conflicts: Array<{

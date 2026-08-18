@@ -1,6 +1,6 @@
 import { useCallback, useReducer, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import type { AttendanceStatus, RegisterChange } from '../types'
+import type { AttendanceStatus, MarkAllResponse, RegisterChange } from '../types'
 
 interface CellValue {
   status: AttendanceStatus
@@ -88,7 +88,7 @@ export function useOptimisticMutation(classId: string) {
   const [flushing, setFlushing] = useState(false)
 
   const send = useCallback(
-    async (queue: RegisterChange[]) => {
+    async (queue: RegisterChange[]): Promise<boolean> => {
       setFlushing(true)
       try {
         const response = await fetch('/api/attendance', {
@@ -110,12 +110,14 @@ export function useOptimisticMutation(classId: string) {
           if (month) {
             queryClient.invalidateQueries({ queryKey: ['attendance', classId, month] })
           }
-        } else {
-          for (const change of queue) {
-            dispatch({ type: 'rollback', change })
-            dispatch({ type: 'queueFailed', change })
-          }
+          return true
         }
+
+        for (const change of queue) {
+          dispatch({ type: 'rollback', change })
+          dispatch({ type: 'queueFailed', change })
+        }
+        return false
       } finally {
         setFlushing(false)
       }
@@ -131,6 +133,71 @@ export function useOptimisticMutation(classId: string) {
       void send([change])
     },
     [send],
+  )
+
+  // Batch entry point: one request for the whole set instead of one per cell.
+  const markCells = useCallback(
+    (changes: RegisterChange[]) => {
+      if (changes.length === 0) return Promise.resolve(true)
+      for (const change of changes) {
+        dispatch({ type: 'optimistic', change })
+        dispatch({ type: 'track', change })
+      }
+      return send(changes)
+    },
+    [send],
+  )
+
+  // The server resolves the roster, so no per-student payload is sent.
+  const markAll = useCallback(
+    async (date: string, status: AttendanceStatus, studentIds: string[]) => {
+      const changes: RegisterChange[] = studentIds.map((studentId) => ({
+        studentId,
+        date,
+        status,
+      }))
+      for (const change of changes) {
+        dispatch({ type: 'optimistic', change })
+        dispatch({ type: 'track', change })
+      }
+
+      setFlushing(true)
+      try {
+        const response = await fetch('/api/attendance/mark-all', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ classId, date, status }),
+        })
+
+        if (!response.ok) {
+          for (const change of changes) {
+            dispatch({ type: 'rollback', change })
+            dispatch({ type: 'queueFailed', change })
+          }
+          const payload = (await response.json().catch(() => null)) as
+            | { message?: string }
+            | null
+          return { ok: false as const, message: payload?.message }
+        }
+
+        const data = (await response.json()) as MarkAllResponse
+        for (const change of changes) {
+          dispatch({
+            type: 'resolve',
+            change,
+            version: { status: change.status, updatedAt: new Date().toISOString() },
+          })
+        }
+        dispatch({ type: 'clearFailed', changes })
+        queryClient.invalidateQueries({
+          queryKey: ['attendance', classId, date.slice(0, 7)],
+        })
+        return { ok: true as const, applied: data.applied, skipped: data.skipped }
+      } finally {
+        setFlushing(false)
+      }
+    },
+    [classId, queryClient],
   )
 
   const retryFailed = useCallback(() => {
@@ -155,6 +222,8 @@ export function useOptimisticMutation(classId: string) {
       return state.pending.includes(key)
     },
     markCell,
+    markCells,
+    markAll,
     retryFailed,
     flush: () => state.failed.length > 0 && void send(state.failed),
     flushing,

@@ -46,17 +46,21 @@ export function StudentsPage() {
 
   const paginationPageSize =
     pageSizeParam === 'all' ? 'all' : pageSize;
-  useEffect(() => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
 
-      if (params.get('page') !== '1') {
-        params.set('page', '1');
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        return;
       }
-
-      return params;
-    });
-  }, [debouncedSearch, setSearchParams]);
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        params.set('page', '1');
+        return params;
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedSearch]);
 
   const onPageChange = (newPageIndex: number) => {
     setSearchParams((prev) => {

@@ -12,11 +12,7 @@ const CLASS_IDS = ['g10a', 'g10b', 'g11a', 'g11b', 'g12a', 'g12b']
 function buildRoster(): Record<string, RosterStudent[]> {
   return Object.fromEntries(
     CLASS_IDS.map((classId) => {
-      // Get the class index (0-5) corresponding to this classId
       const classIndex = CLASS_IDS.indexOf(classId)
-
-      // Distribute the 100 demoStudents across 6 classes using modulo matching
-      // demoStudents[i] goes to class (i % 6)
       const students: RosterStudent[] = demoStudents
         .filter((_, i) => i % 6 === classIndex)
         .map((student) => ({
@@ -32,6 +28,7 @@ function buildRoster(): Record<string, RosterStudent[]> {
 }
 
 const ROSTER = buildRoster()
+
 
 function daysInMonth(month: string): number {
   const [y, m] = month.split('-').map(Number)
@@ -132,6 +129,32 @@ export function applyChanges(
     }
   }
   return { applied: changes.length }
+}
+
+export function applyMarkAll(
+  classId: string,
+  date: string,
+  status: AttendanceStatus,
+): { applied: number; skipped: number; holiday: boolean } {
+  const month = date.slice(0, 7)
+  const register = getRegister(classId, month)
+
+  if (register.holidays.includes(date)) {
+    return { applied: 0, skipped: register.students.length, holiday: true }
+  }
+
+  // Only currently enrolled students are marked; transferred/inactive are skipped.
+  const targets = register.students.filter((student) => student.status === 'active')
+  applyChanges(
+    classId,
+    targets.map((student) => ({ studentId: student.id, date, status })),
+  )
+
+  return {
+    applied: targets.length,
+    skipped: register.students.length - targets.length,
+    holiday: false,
+  }
 }
 
 export function getClassOptions() {

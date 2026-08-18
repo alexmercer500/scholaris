@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from 'msw'
-import { applyChanges, getRegister } from '@mocks/db/attendance'
+import { applyChanges, applyMarkAll, getRegister } from '@mocks/db/attendance'
 import type { AttendanceStatus } from '@features/attendance/types'
 
 function randomLatency(): number {
@@ -58,6 +58,38 @@ export const attendanceHandlers = [
 
     return HttpResponse.json({
       applied: result.applied,
+      entries: register.entries,
+    })
+  }),
+
+  http.patch('/api/attendance/mark-all', async ({ request }) => {
+    await delay(randomLatency())
+
+    const body = (await request.json()) as {
+      classId: string
+      date: string
+      status: AttendanceStatus
+    }
+
+    if (!body.classId || !body.date || !body.status) {
+      return HttpResponse.json(
+        { message: 'classId, date and status are required' },
+        { status: 400 },
+      )
+    }
+
+    const result = applyMarkAll(body.classId, body.date, body.status)
+    if (result.holiday) {
+      return HttpResponse.json(
+        { message: `${body.date} is a holiday` },
+        { status: 409 },
+      )
+    }
+
+    const register = getRegister(body.classId, body.date.slice(0, 7))
+    return HttpResponse.json({
+      applied: result.applied,
+      skipped: result.skipped,
       entries: register.entries,
     })
   }),

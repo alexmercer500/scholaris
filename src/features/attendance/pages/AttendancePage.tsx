@@ -30,6 +30,12 @@ function currentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 }
 
+// Always today's real date — never the viewed month spliced with today's day.
+function todayISO(): string {
+  const now = new Date()
+  return `${currentMonth()}-${String(now.getDate()).padStart(2, '0')}`
+}
+
 export function AttendancePage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -209,33 +215,52 @@ export function AttendancePage() {
     isPending,
     handleSet,
   )
+  const markAllPresent = async () => {
+    const target = todayISO()
 
-  const markAllPresent = () => {
-    const today = new Date()
-    const target = `${month}-${String(today.getDate()).padStart(2, '0')}`
-    if (!rows.length) return
-    for (const row of rows) {
-      handleSet(row.id, target, 'present')
+    if (!target.startsWith(month)) {
+      toast.error('Switch to the current month to mark today')
+      return
     }
-    toast.success('Marked all present')
+    if (holidays.has(target)) {
+      toast.error('Today is a holiday')
+      return
+    }
+
+    // Marks the whole class, not just the filtered rows — the server owns the roster.
+    const studentIds = (registerQuery.data?.students ?? [])
+      .filter((student) => student.status === 'active')
+      .map((student) => student.id)
+    if (!studentIds.length) return
+
+    const result = await optimistic.markAll(target, 'present', studentIds)
+    if (result.ok) {
+      toast.success(
+        result.skipped
+          ? `Marked ${result.applied} present · ${result.skipped} skipped`
+          : `Marked ${result.applied} present`,
+      )
+    } else {
+      toast.error(result.message ?? 'Failed to mark all present')
+    }
   }
 
   const openDaySheet = () => {
-    const today = `${month}-${String(new Date().getDate()).padStart(2, '0')}`
-    navigate(`/attendance/${today}?classId=${classId}`)
+    navigate(`/attendance/${todayISO()}?classId=${classId}`)
   }
 
-  const today = `${month}-${String(new Date().getDate()).padStart(2, '0')}`
+  const today = todayISO()
   const bulkCells: BulkCell[] = holidays.has(today)
     ? []
     : paginatedRows.map((row) => ({ studentId: row.id, date: today }))
 
-  const applyBulk = (
+  const applyBulk = async (
     changes: Array<{ studentId: string; date: string; status: AttendanceStatus; reason?: string }>,
   ) => {
-    for (const change of changes) {
-      optimistic.markCell(change.studentId, change.date, change.status)
-    }
+    // Per-student status/reason, so this stays a batched changes[] request.
+    const ok = await optimistic.markCells(changes)
+    if (ok) toast.success(`Updated ${changes.length} ${changes.length === 1 ? 'entry' : 'entries'}`)
+    else toast.error('Failed to apply corrections')
   }
 
   return (
